@@ -42,7 +42,13 @@ class User(Base):
         nullable=False,
     )
 
-    # Relationships — added as related models are created in later phases
+    # Relationships
+    projects = relationship(
+        "Project",
+        back_populates="owner",
+        cascade="all, delete-orphan",
+        lazy="selectin",
+    )
 
     def __repr__(self) -> str:
         return f"<User(id={self.id}, email={self.email})>"

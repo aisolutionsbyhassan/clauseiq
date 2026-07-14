@@ -33,6 +33,15 @@ from app.core.logging_config import get_logger, setup_logging
 
 # --- Routers ---
 from app.api.v1.auth import router as auth_router
+from app.api.v1.projects import router as projects_router
+from app.api.v1.contracts import router as contracts_router
+from app.api.v1.chat import router as chat_router
+from app.api.v1.clauses import router as clauses_router
+from app.api.v1.risks import router as risks_router
+from app.api.v1.summaries import router as summaries_router
+from app.api.v1.comparisons import router as comparisons_router
+from app.api.v1.search import router as search_router
+from app.api.v1.dashboard import router as dashboard_router
 
 logger = get_logger("main")
 
@@ -80,6 +89,15 @@ def create_app() -> FastAPI:
 
     # --- Routers ---
     app.include_router(auth_router, prefix="/api/v1")
+    app.include_router(projects_router, prefix="/api/v1")
+    app.include_router(contracts_router, prefix="/api/v1")
+    app.include_router(chat_router, prefix="/api/v1")
+    app.include_router(clauses_router, prefix="/api/v1")
+    app.include_router(risks_router, prefix="/api/v1")
+    app.include_router(summaries_router, prefix="/api/v1")
+    app.include_router(comparisons_router, prefix="/api/v1")
+    app.include_router(search_router, prefix="/api/v1")
+    app.include_router(dashboard_router, prefix="/api/v1")
 
     # --- Health Check ---
     @app.get("/health", tags=["Health"])
