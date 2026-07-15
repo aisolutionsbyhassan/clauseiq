@@ -91,6 +91,7 @@ export default function Dashboard() {
                     <th className="px-4 py-3 font-medium">Status</th>
                     <th className="px-4 py-3 font-medium">Risk Level</th>
                     <th className="px-4 py-3 font-medium">Date</th>
+                    <th className="px-4 py-3 font-medium text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -114,6 +115,14 @@ export default function Dashboard() {
                       </td>
                       <td className="px-4 py-3 text-muted-foreground">
                         {new Date(contract.uploaded_at).toLocaleDateString()}
+                      </td>
+                      <td className="px-4 py-3 text-right space-x-2">
+                        <Button variant="outline" size="sm" asChild>
+                          <Link to={`/contracts/${contract.id}`}>Analyze</Link>
+                        </Button>
+                        <Button variant="outline" size="sm" asChild>
+                          <Link to={`/contracts/${contract.id}/chat`}>Chat</Link>
+                        </Button>
                       </td>
                     </tr>
                   ))}

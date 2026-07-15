@@ -50,8 +50,8 @@ export default function Search() {
   return (
     <div className="flex flex-col gap-8 max-w-4xl mx-auto w-full">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">Semantic Search</h1>
-        <p className="text-muted-foreground mt-1">Search by meaning, not just keywords, across all contracts in a project.</p>
+        <h1 className="text-3xl font-bold tracking-tight">Ask Your Contracts</h1>
+        <p className="text-muted-foreground mt-1">Search by meaning or ask questions across all contracts in a project.</p>
       </div>
 
       <Card>

@@ -17,7 +17,7 @@ export default function AppLayout() {
   const navItems = [
     { to: '/dashboard', icon: LayoutDashboard, label: 'Dashboard' },
     { to: '/projects', icon: FolderKanban, label: 'Projects' },
-    { to: '/search', icon: Search, label: 'Search' },
+    { to: '/search', icon: Search, label: 'Ask Contracts' },
   ];
 
   return (
