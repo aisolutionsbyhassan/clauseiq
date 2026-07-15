@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { dashboardApi } from '@/api/dashboardApi';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { FileText, FolderKanban, AlertTriangle, CheckCircle2 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 

@@ -23,7 +23,14 @@ export default function Login() {
       login(response.access_token);
       navigate('/dashboard');
     } catch (err) {
-      setErrorMsg(err.response?.data?.detail || 'Invalid email or password');
+      let message = 'Invalid email or password';
+      const detail = err.response?.data?.detail;
+      if (typeof detail === 'string') {
+        message = detail;
+      } else if (Array.isArray(detail)) {
+        message = detail.map(e => e.msg).join(', ');
+      }
+      setErrorMsg(message);
     } finally {
       setLoading(false);
     }

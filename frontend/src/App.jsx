@@ -8,6 +8,9 @@ import AppLayout from './components/layout/AppLayout';
 import Login from './pages/auth/Login';
 import Register from './pages/auth/Register';
 
+// Public Pages
+import Landing from './pages/public/Landing';
+
 // Core Application Pages
 import Dashboard from './pages/dashboard/Dashboard';
 import Projects from './pages/projects/Projects';
@@ -23,13 +26,13 @@ function App() {
       <BrowserRouter>
         <Routes>
           {/* Public Routes */}
+          <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
           {/* Protected Routes inside AppLayout */}
           <Route element={<ProtectedRoute />}>
             <Route element={<AppLayout />}>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/projects" element={<Projects />} />
               <Route path="/projects/:projectId" element={<ProjectDetail />} />

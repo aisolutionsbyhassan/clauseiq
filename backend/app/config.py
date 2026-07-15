@@ -39,8 +39,8 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRATION_MINUTES: int = 60
 
-    # --- Google Gemini AI ---
-    GEMINI_API_KEY: str = ""
+    # --- Groq AI ---
+    GROQ_API_KEY: str = ""
 
     # --- ChromaDB ---
     CHROMA_PERSIST_DIRECTORY: str = "./chroma_data"

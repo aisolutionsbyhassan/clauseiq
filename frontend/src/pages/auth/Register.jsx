@@ -29,7 +29,14 @@ export default function Register() {
       login(loginResponse.access_token);
       navigate('/dashboard');
     } catch (err) {
-      setErrorMsg(err.response?.data?.detail || 'Registration failed. Please try again.');
+      let message = 'Registration failed. Please try again.';
+      const detail = err.response?.data?.detail;
+      if (typeof detail === 'string') {
+        message = detail;
+      } else if (Array.isArray(detail)) {
+        message = detail.map(e => e.msg).join(', ');
+      }
+      setErrorMsg(message);
     } finally {
       setLoading(false);
     }

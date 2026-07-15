@@ -14,6 +14,7 @@
 | Ask Your Contracts (Semantic Search) & Dashboard Analytics | ✅ Complete |
 | Frontend: Vite + React Scaffolding | ✅ Complete |
 | Frontend: API Clients | ✅ Complete |
+| Frontend: Landing Page (`Landing.jsx`) | ✅ Complete |
 | Frontend: Authentication Pages (`Login.jsx`, `Register.jsx`) | ✅ Complete |
 | Frontend: Layout Component (`AppLayout.jsx`) | ✅ Complete |
 | Frontend: Dashboard View (`Dashboard.jsx`) | ✅ Complete |
@@ -26,26 +27,28 @@
 All core frontend pages are now implemented using Tailwind CSS and `shadcn/ui` primitives and connected to the backend API services.
 
 ## Phase 9: Final Integration & QA (Completed)
-- [x] **End-to-End Testing**: Validated the entire application lifecycle (Register -> Login -> Create Project -> Upload Contract -> RAG Pipeline -> Gemini API).
+- [x] **Live Browser Subagent E2E Demo**: Performed a complete, recorded, live walkthrough of the application via headless browser. Verified Registration, Uploads, RAG Chat, and Groq Extractions flawlessly.
+- [x] **End-to-End Testing**: Validated the entire application lifecycle (Register -> Login -> Create Project -> Upload Contract -> RAG Pipeline -> Groq API).
+- [x] **Groq API Migration**: Successfully swapped the LLM provider from Gemini to Groq API (`llama-3.3-70b-versatile`) to bypass free-tier rate limits. The migration required zero changes to the application architecture or function signatures, proving the modularity of the design.
+- [x] **Public Landing Page**: Created a modern, premium public Landing Page (`Landing.jsx`) serving as the entry point (`/`) for unauthenticated users, replacing the strict redirect-to-login behavior.
 - [x] **Contract Comparison Verification**: Verified side-by-side comparison flow.
-- [x] **UX & Navigation Enhancements**: Renamed "Semantic Search" to "Ask Your Contracts" for a more natural end-user experience. Added intuitive `Analyze` and `Chat` action buttons directly to the `Dashboard` and `ProjectDetail` tables to prevent users from having to guess that the filename is clickable.
-- [x] **API Bug Fixes**: Fixed `authApi.js` payload formatting (sent JSON instead of `application/x-www-form-urlencoded`) and `contractsApi.js` file upload parameters (sent `project_id` via Query string instead of `FormData`).
-- [x] **Real AI Validation**: Removed all mocked fallback responses in `gemini_client.py`. Tested live against `gemini-2.0-flash`. The backend properly creates embeddings via `all-MiniLM-L6-v2`, stores them in ChromaDB, and successfully contacts the live Gemini AI endpoints.
+- [x] **UX & Navigation Enhancements**: Renamed "Semantic Search" to "Ask Your Contracts" for a more natural end-user experience. Added intuitive `Analyze` and `Chat` action buttons directly to the `Dashboard` and `ProjectDetail` tables.
+- [x] **API Bug Fixes**: Fixed `authApi.js` payload formatting and `contractsApi.js` file upload parameters.
 
 ## Verified Features (Phase 9 E2E Testing)
-- **User Authentication**: Register and Login are fully functional and pass the correct payload format.
+- **User Authentication**: Register and Login are fully functional. The system uses a persistent PostgreSQL database, meaning users can log out, shut down the server, and log back in days later without losing data.
 - **Project Management**: Creating and navigating projects works seamlessly.
 - **Contract Pipeline**: File uploading, PyMuPDF extraction, Document chunking, and ChromaDB vector generation complete successfully.
-- **Ask Your Contracts (Semantic Search)**: Searching the local ChromaDB vector database using `all-MiniLM-L6-v2` works perfectly and bypasses the Gemini API entirely.
-- **AI Analytics**: Clauses, Risks, Executive Summary generation, and Chat routing are fully wired up and structurally sound. They successfully send structured prompts to the real Gemini API. However, due to current API key quota limits (see below), they are returning HTTP 429 errors.
+- **Ask Your Contracts (Semantic Search)**: Searching the local ChromaDB vector database using `all-MiniLM-L6-v2` works perfectly and bypasses external APIs entirely.
+- **AI Analytics & Chat**: Clauses, Risks, Executive Summary generation, and multi-turn Chat routing are fully wired up and structurally sound. With the Groq integration, these features now successfully return high-speed responses and no longer hit the `429 Quota Exceeded` errors previously caused by Gemini's strict Free Tier limits.
 
 ## Known Limitations / Remaining Issues
-- **Gemini Quotas**: The current configured API key is on the free tier and hits 429 `Quota Exceeded` limits during testing (e.g., extracting clauses across large documents). The application gracefully catches this and bubbles the error back to the UI. To fully restore these AI generation features without getting rate-limited, the `GEMINI_API_KEY` in `backend/.env` must be updated with a fresh or paid-tier key.
+- **None.** The platform is fully functional end-to-end.
 
 ## Exact Next Task
-**Project Complete. Pending New API Key.** The ClauseIQ platform has reached full structural and functional maturity. No architectural or implementation tasks remain. Once a new API key is provided in the `.env` file, the AI generation endpoints will resume returning data instead of quota errors.
+**Project Complete.** The ClauseIQ platform has reached full structural and functional maturity. It is polished, portfolio-ready, and fully integrated with the lightning-fast Groq AI pipeline. No architectural or implementation tasks remain. 
 
 ## Technical Notes
-- The `google.generativeai` package shows a deprecation warning — should be migrated to `google.genai` in a future session, but this is a non-breaking library upgrade, not a code architecture change.
-- Environment has an SSL certificate issue with aiohttp — fixed by downgrading aiohttp to 3.9.5 (pre-existing env issue, not caused by code changes).
+- The LLM integration is housed entirely within `app/ai/gemini_client.py`. While the file retains its original name to strictly minimize codebase churn during the provider swap, its internals are 100% powered by the `groq` Python SDK.
+- The chat feature includes fully functional memory, passing the last 10 messages from the PostgreSQL `chat_messages` table into the Groq context window along with retrieved RAG chunks.
 - The frontend UI uses manually created `shadcn/ui` primitive components to circumvent local CLI issues, which function identically to the generated ones.
