@@ -265,7 +265,7 @@ backend/
 │   ├── services/
 │   │   └── One service module per resource domain, named `<resource>_service.py` (e.g. `contract_service.py`, the pipeline entry point referenced in Section 18), owning all business logic for that resource per Section 11. As with routers, the pattern (one service per resource) is the architectural rule; the specific set of services tracks the current feature set.
 │   ├── ai/
-│   │   ├── gemini_client.py     # Thin Gemini API wrapper
+│   │   ├── llm_client.py        # Thin LLM API wrapper
 │   │   ├── prompts/             # Prompt templates per workflow
 │   │   ├── embeddings.py        # Sentence Transformers wrapper
 │   │   ├── retriever.py         # ChromaDB query logic
@@ -379,7 +379,7 @@ The schema deliberately keeps clause/risk categories as enums rather than free-t
 6. **Vector Storage**: Vectors are written to the single shared ChromaDB collection (Section 6.5); each vector's metadata includes `user_id`, `project_id`, `contract_id`, `page_number`, `chunk_index`, and `document_type`. The corresponding `DocumentChunk` row is written to PostgreSQL with the matching `chroma_id`.
 7. **Retriever**: At query time (chat or search), `ai/retriever.py` embeds the user's query and performs a similarity search against the shared ChromaDB collection, filtered by metadata (`contract_id` for single-contract scope, `project_id` for project-wide scope), returning the top-k chunks.
 8. **Prompt Construction**: `ai/prompts/` templates assemble a system instruction, the retrieved chunk texts (each tagged with its source page/chunk), and prior conversation turns (for chat) into a single prompt via LangChain.
-9. **Gemini**: `ai/gemini_client.py` sends the constructed prompt to Gemini, requesting a structured response where applicable (clause extraction, risk detection, summary, comparison) or a conversational response with citation markers (chat).
+9. **LLM**: `ai/llm_client.py` sends the constructed prompt to the LLM (Groq), requesting a structured response where applicable (clause extraction, risk detection, summary, comparison) or a conversational response with citation markers (chat).
 10. **Structured Output**: The raw Gemini response is parsed and validated against the relevant Pydantic schema in `ai/schemas.py`; validation failures raise a clear, loggable error rather than silently passing through malformed data.
 11. **Source Citation**: Each answer/clause/risk is linked back to the specific `chunk_index`/`page_number` it was derived from, which the frontend renders as a clickable citation reference.
 
@@ -543,7 +543,7 @@ The MVP architecture intentionally leaves these extension points open without re
 - **Vector database swap**: `ai/retriever.py` and the embedding-write path in the processing pipeline are the only places that talk to ChromaDB directly, so migrating to a managed vector database is isolated to those files.
 - **Team roles / RBAC**: The `get_current_user` dependency is the single choke point for authorization; adding role checks (e.g., "reviewer" vs "owner") extends this dependency rather than touching every router individually.
 - **Billing/subscriptions**: Would attach to the future `Organization` entity as a separate `Subscription` model and a small `billing/` service module, without touching the contract-intelligence domain logic at all.
-- **LLM provider flexibility**: Because all Gemini calls are isolated behind `ai/gemini_client.py`, adding support for an alternative model provider is a matter of implementing an alternate client behind the same function signatures used by `ai/` workflows.
+- **LLM provider flexibility**: Because all LLM calls are isolated behind `ai/llm_client.py`, adding support for an alternative model provider is a matter of implementing an alternate client behind the same function signatures used by `ai/` workflows.
 
 ## 19. Developer Workflow
 

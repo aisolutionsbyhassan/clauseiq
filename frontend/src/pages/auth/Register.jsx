@@ -86,7 +86,7 @@ export default function Register() {
                 type="password"
                 {...register('password', { 
                   required: 'Password is required',
-                  minLength: { value: 6, message: 'Password must be at least 6 characters' }
+                  minLength: { value: 8, message: 'Password must be at least 8 characters' }
                 })}
               />
               {errors.password && <span className="text-xs text-destructive">{errors.password.message}</span>}

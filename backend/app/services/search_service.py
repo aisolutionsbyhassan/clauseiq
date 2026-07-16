@@ -11,6 +11,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.ai.embeddings import generate_single_embedding
+from app.ai.llm_client import generate_text
 from app.ai.retriever import query_embeddings
 from app.config import settings
 from app.core.exceptions import AuthorizationError, ResourceNotFoundError
@@ -95,13 +96,33 @@ async def semantic_search(
     # Sort by similarity descending
     search_items.sort(key=lambda x: x.similarity_score, reverse=True)
 
-    logger.info(
-        "Semantic search: project_id=%s, query_len=%d, results=%d",
-        project_id, len(query), len(search_items),
-    )
+    # Step 4: AI Synthesis
+    ai_summary = None
+    if search_items:
+        # Build context for the LLM
+        context_text = "\n\n".join([f"Document: {item.contract_filename}\nSnippet: {item.text_snippet}" for item in search_items[:5]])
+        
+        system_prompt = (
+            "You are a legal search assistant. Summarize the retrieved evidence to answer the user's query.\n"
+            "Rules:\n"
+            "1. Be concise (1-3 sentences).\n"
+            "2. Remain factual based ONLY on the evidence.\n"
+            "3. Avoid speculation.\n"
+            "4. Do NOT use conversational filler (e.g., 'Based on the context').\n"
+            "5. Do NOT mention chunk IDs or similarity scores."
+        )
+        
+        user_prompt = f"Query: {query}\n\nEvidence:\n{context_text}"
+        
+        try:
+            ai_summary = await generate_text(prompt=user_prompt, system_instruction=system_prompt, temperature=0.1)
+        except Exception as e:
+            logger.error(f"Search synthesis failed: {e}")
+            ai_summary = "Failed to generate AI summary for these results."
 
     return SearchResponse(
         results=search_items,
         total=len(search_items),
         query=query,
+        ai_summary=ai_summary,
     )

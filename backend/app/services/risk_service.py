@@ -12,7 +12,7 @@ import uuid
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.ai.gemini_client import generate_structured
+from app.ai.llm_client import generate_structured
 from app.ai.prompts.templates import RISK_DETECTION_PROMPT, RISK_DETECTION_SYSTEM
 from app.ai.schemas import RiskDetectionSchema
 from app.core.exceptions import AIServiceError, ProcessingFailedError, ResourceNotFoundError

@@ -11,7 +11,7 @@ import uuid
 from sqlalchemy import delete, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.ai.gemini_client import generate_structured
+from app.ai.llm_client import generate_structured
 from app.ai.prompts.templates import CLAUSE_EXTRACTION_PROMPT, CLAUSE_EXTRACTION_SYSTEM
 from app.ai.schemas import ClauseExtractionSchema
 from app.core.exceptions import AIServiceError, ProcessingFailedError, ResourceNotFoundError

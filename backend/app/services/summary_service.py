@@ -11,7 +11,7 @@ import uuid
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.ai.gemini_client import generate_structured
+from app.ai.llm_client import generate_structured
 from app.ai.prompts.templates import EXECUTIVE_SUMMARY_PROMPT, EXECUTIVE_SUMMARY_SYSTEM
 from app.ai.schemas import ExecutiveSummarySchema
 from app.core.exceptions import AIServiceError, ProcessingFailedError, ResourceNotFoundError

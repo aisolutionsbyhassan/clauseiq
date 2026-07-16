@@ -38,3 +38,4 @@ class SearchResponse(BaseModel):
     results: list[SearchResultItem]
     total: int
     query: str
+    ai_summary: str | None = None

@@ -13,6 +13,7 @@ export default function Search() {
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [query, setQuery] = useState('');
   const [results, setResults] = useState([]);
+  const [aiSummary, setAiSummary] = useState(null);
   const [searching, setSearching] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
 
@@ -40,6 +41,7 @@ export default function Search() {
     try {
       const res = await searchApi.semanticSearch(selectedProjectId, query);
       setResults(res.results || []);
+      setAiSummary(res.ai_summary || null);
     } catch (err) {
       alert("Search failed. Please try again.");
     } finally {
@@ -104,6 +106,21 @@ export default function Search() {
             </div>
           ) : (
             <div className="flex flex-col gap-4">
+              {aiSummary && (
+                <Card className="border-primary/50 bg-primary/5">
+                  <CardHeader className="py-4 pb-2">
+                    <CardTitle className="text-base flex items-center gap-2">
+                      <SearchIcon className="h-4 w-4 text-primary" />
+                      AI Summary
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pb-4 pt-0">
+                    <p className="text-sm text-foreground leading-relaxed">
+                      {aiSummary}
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
               {results.map((result, idx) => (
                 <Card key={idx}>
                   <CardHeader className="py-4">

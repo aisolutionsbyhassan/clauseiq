@@ -36,11 +36,11 @@ All core frontend pages are now implemented using Tailwind CSS and `shadcn/ui` p
 - [x] **API Bug Fixes**: Fixed `authApi.js` payload formatting and `contractsApi.js` file upload parameters.
 
 ## Verified Features (Phase 9 E2E Testing)
-- **User Authentication**: Register and Login are fully functional. The system uses a persistent PostgreSQL database, meaning users can log out, shut down the server, and log back in days later without losing data.
+- **User Authentication**: Register and Login are fully functional, with standardized "Password must be at least 8 characters" validation messages. The system uses a persistent PostgreSQL database.
 - **Project Management**: Creating and navigating projects works seamlessly.
 - **Contract Pipeline**: File uploading, PyMuPDF extraction, Document chunking, and ChromaDB vector generation complete successfully.
-- **Ask Your Contracts (Semantic Search)**: Searching the local ChromaDB vector database using `all-MiniLM-L6-v2` works perfectly and bypasses external APIs entirely.
-- **AI Analytics & Chat**: Clauses, Risks, Executive Summary generation, and multi-turn Chat routing are fully wired up and structurally sound. With the Groq integration, these features now successfully return high-speed responses and no longer hit the `429 Quota Exceeded` errors previously caused by Gemini's strict Free Tier limits.
+- **Ask Your Contracts (Semantic Search)**: Redesigned into a hybrid intelligence experience. The feature performs vector retrieval and uses a single LLM call to synthesize an AI summary, displayed prominently above the retrieved evidence snippets.
+- **AI Analytics & Chat**: Clauses, Risks, Executive Summary generation, and multi-turn Chat routing are fully wired up and structurally sound. Chat prompt instructions have been updated to cleanly remove raw inline citations (e.g., "[Chunk X]") in favor of natural prose, while retaining the frontend Sources component. With the Groq integration, these features now successfully return high-speed responses and no longer hit the `429 Quota Exceeded` errors previously caused by Gemini's strict Free Tier limits.
 
 ## Known Limitations / Remaining Issues
 - **None.** The platform is fully functional end-to-end.
@@ -49,6 +49,6 @@ All core frontend pages are now implemented using Tailwind CSS and `shadcn/ui` p
 **Project Complete.** The ClauseIQ platform has reached full structural and functional maturity. It is polished, portfolio-ready, and fully integrated with the lightning-fast Groq AI pipeline. No architectural or implementation tasks remain. 
 
 ## Technical Notes
-- The LLM integration is housed entirely within `app/ai/gemini_client.py`. While the file retains its original name to strictly minimize codebase churn during the provider swap, its internals are 100% powered by the `groq` Python SDK.
+- The LLM integration is housed entirely within `app/ai/llm_client.py`. The internals are 100% powered by the `groq` Python SDK.
 - The chat feature includes fully functional memory, passing the last 10 messages from the PostgreSQL `chat_messages` table into the Groq context window along with retrieved RAG chunks.
 - The frontend UI uses manually created `shadcn/ui` primitive components to circumvent local CLI issues, which function identically to the generated ones.

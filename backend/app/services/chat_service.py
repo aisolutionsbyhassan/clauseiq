@@ -13,7 +13,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.ai.embeddings import generate_single_embedding
-from app.ai.gemini_client import generate_structured
+from app.ai.llm_client import generate_structured
 from app.ai.prompts.templates import CHAT_PROMPT, CHAT_SYSTEM
 from app.ai.retriever import query_embeddings
 from app.ai.schemas import ChatResponseSchema

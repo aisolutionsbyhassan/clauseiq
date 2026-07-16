@@ -11,7 +11,7 @@ import uuid
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.ai.gemini_client import generate_structured
+from app.ai.llm_client import generate_structured
 from app.ai.prompts.templates import COMPARISON_PROMPT, COMPARISON_SYSTEM
 from app.ai.schemas import ComparisonSchema
 from app.core.exceptions import (
