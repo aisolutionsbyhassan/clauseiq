@@ -105,8 +105,25 @@ async def semantic_search(
             row = contract_result.first()
             contract_filename = row[0] if row else "Unknown"
 
-            # Truncate text snippet for display
-            snippet = document[:300] + "..." if len(document) > 300 else document
+            # Truncate text snippet intelligently for display (Smart Snippets)
+            doc_lower = document.lower()
+            query_terms = [t for t in query.lower().split() if len(t) > 3]
+            best_idx = 0
+            
+            for term in query_terms:
+                idx = doc_lower.find(term)
+                if idx != -1:
+                    best_idx = idx
+                    break
+                    
+            start_idx = max(0, best_idx - 50)
+            end_idx = min(len(document), start_idx + 300)
+            
+            snippet = document[start_idx:end_idx]
+            if start_idx > 0:
+                snippet = "..." + snippet
+            if end_idx < len(document):
+                snippet = snippet + "..."
 
             item = SearchResultItem(
                 contract_id=uuid.UUID(contract_id_str),
@@ -138,8 +155,9 @@ async def semantic_search(
             "1. Be concise (1-3 sentences).\n"
             "2. Remain factual based ONLY on the evidence.\n"
             "3. Avoid speculation.\n"
-            "4. Do NOT use conversational filler (e.g., 'Based on the context').\n"
-            "5. Do NOT mention chunk IDs or similarity scores."
+            "4. Do NOT use conversational filler.\n"
+            "5. Do NOT mention chunk IDs or similarity scores.\n"
+            "6. If the evidence comes from multiple contracts, efficiently mention the document filenames to distinguish their policies."
         )
         
         user_prompt = f"Query: {query}\n\nEvidence:\n{context_text}"

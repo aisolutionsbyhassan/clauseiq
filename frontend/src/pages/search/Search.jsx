@@ -131,9 +131,6 @@ export default function Search() {
                           {result.contract_filename}
                         </Link>
                       </CardTitle>
-                      <div className="text-xs font-mono bg-muted px-2 py-1 rounded">
-                        Score: {(result.similarity_score * 100).toFixed(1)}%
-                      </div>
                     </div>
                   </CardHeader>
                   <CardContent className="pb-4 pt-0">
