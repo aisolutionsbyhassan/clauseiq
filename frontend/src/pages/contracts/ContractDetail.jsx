@@ -1,17 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useLocation } from 'react-router-dom';
 import { contractsApi } from '@/api/contractsApi';
 import { analysisApi } from '@/api/analysisApi';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { ArrowLeft, MessageSquare, AlertTriangle, Play, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, MessageSquare, AlertTriangle, Play, CheckCircle2, Download } from 'lucide-react';
 
 export default function ContractDetail() {
   const { contractId } = useParams();
+  const location = useLocation();
   const [contract, setContract] = useState(null);
   const [loading, setLoading] = useState(true);
+  
+  const [activeTab, setActiveTab] = useState(location.state?.highlightChunk !== undefined ? "clauses" : "summary");
+  const [highlightedClauseId, setHighlightedClauseId] = useState(null);
   
   const [clausesData, setClausesData] = useState(null);
   const [risksData, setRisksData] = useState(null);
@@ -38,7 +42,27 @@ export default function ContractDetail() {
         analysisApi.getSummary(contractId)
       ]);
       
-      if (c.status === 'fulfilled' && c.value.clauses.length > 0) setClausesData(c.value.clauses);
+      if (c.status === 'fulfilled' && c.value.clauses.length > 0) {
+        setClausesData(c.value.clauses);
+        
+        // Handle clause highlighting from search
+        const targetChunk = location.state?.highlightChunk;
+        if (targetChunk !== undefined) {
+          const matchingClause = c.value.clauses.find(clause => 
+            clause.is_present && clause.source_chunk_ids && clause.source_chunk_ids.includes(targetChunk)
+          );
+          if (matchingClause) {
+            setHighlightedClauseId(matchingClause.id);
+            // Give DOM time to render the clauses tab before scrolling
+            setTimeout(() => {
+              const el = document.getElementById(`clause-${matchingClause.id}`);
+              if (el) {
+                el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+              }
+            }, 300);
+          }
+        }
+      }
       if (r.status === 'fulfilled' && r.value.risks.length > 0) setRisksData(r.value.risks);
       if (s.status === 'fulfilled') setSummaryData(s.value);
     } catch (err) {
@@ -110,6 +134,9 @@ export default function ContractDetail() {
             </div>
           </div>
           <div className="flex gap-2">
+            <Button variant="outline" onClick={() => contractsApi.downloadContract(contract.id, contract.filename)}>
+              <Download className="mr-2 h-4 w-4" /> Download Original
+            </Button>
             <Button asChild>
               <Link to={`/contracts/${contract.id}/chat`}><MessageSquare className="mr-2 h-4 w-4" /> Chat with Contract</Link>
             </Button>
@@ -117,7 +144,7 @@ export default function ContractDetail() {
         </div>
       </div>
 
-      <Tabs defaultValue="summary" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="mb-4">
           <TabsTrigger value="summary">Executive Summary</TabsTrigger>
           <TabsTrigger value="clauses">Extracted Clauses</TabsTrigger>
@@ -210,7 +237,11 @@ export default function ContractDetail() {
           ) : (
             <div className="grid gap-4">
               {clausesData.map(clause => (
-                <Card key={clause.id} className={!clause.is_present ? 'opacity-60 bg-muted/20' : ''}>
+                <Card 
+                  key={clause.id} 
+                  id={`clause-${clause.id}`}
+                  className={`${!clause.is_present ? 'opacity-60 bg-muted/20' : ''} ${highlightedClauseId === clause.id ? 'ring-2 ring-primary ring-offset-2 transition-all duration-500' : ''}`}
+                >
                   <CardHeader className="py-4">
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-lg">{clause.clause_type.replace('_', ' ').toUpperCase()}</CardTitle>

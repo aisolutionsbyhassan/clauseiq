@@ -167,6 +167,24 @@ async def get_contract(
     return ContractDetailResponse.model_validate(contract)
 
 
+async def get_contract_file(
+    contract_id: uuid.UUID,
+    current_user: User,
+    db: AsyncSession,
+) -> tuple[str, str, str]:
+    """Get the physical file path, filename, and content type for downloading."""
+    contract = await _get_contract_with_ownership_check(contract_id, current_user, db)
+    
+    # Determine MIME type based on the stored file_type
+    content_type = "application/octet-stream"
+    if contract.file_type.value == "pdf":
+        content_type = "application/pdf"
+    elif contract.file_type.value == "docx":
+        content_type = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        
+    return contract.file_path, contract.filename, content_type
+
+
 async def delete_contract(
     contract_id: uuid.UUID,
     current_user: User,

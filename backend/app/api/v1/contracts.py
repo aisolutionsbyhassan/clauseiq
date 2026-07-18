@@ -8,6 +8,7 @@ Business logic is delegated to contract_service per AGENT.md Section 11.
 import uuid
 
 from fastapi import APIRouter, Depends, File, Query, UploadFile
+from fastapi.responses import FileResponse
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.auth.dependencies import get_current_user
@@ -67,6 +68,23 @@ async def get_contract(
     """Get a single contract's details."""
     return await contract_service.get_contract(
         contract_id=contract_id, current_user=current_user, db=db
+    )
+
+
+@router.get("/{contract_id}/download", response_class=FileResponse)
+async def download_contract(
+    contract_id: uuid.UUID,
+    current_user: User = Depends(get_current_user),
+    db: AsyncSession = Depends(get_db),
+) -> FileResponse:
+    """Download the original uploaded contract file."""
+    file_path, filename, content_type = await contract_service.get_contract_file(
+        contract_id=contract_id, current_user=current_user, db=db
+    )
+    return FileResponse(
+        path=file_path,
+        filename=filename,
+        media_type=content_type,
     )
 
 

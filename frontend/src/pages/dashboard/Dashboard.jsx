@@ -3,8 +3,9 @@ import { dashboardApi } from '@/api/dashboardApi';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { FileText, FolderKanban, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { FileText, FolderKanban, AlertTriangle, CheckCircle2, Download } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import { contractsApi } from '@/api/contractsApi';
 
 export default function Dashboard() {
   const [data, setData] = useState(null);
@@ -123,6 +124,9 @@ export default function Dashboard() {
                         </Button>
                         <Button variant="outline" size="sm" asChild>
                           <Link to={`/contracts/${contract.id}/chat`}>Chat</Link>
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => contractsApi.downloadContract(contract.id, contract.filename)}>
+                          <Download className="h-4 w-4" />
                         </Button>
                       </td>
                     </tr>

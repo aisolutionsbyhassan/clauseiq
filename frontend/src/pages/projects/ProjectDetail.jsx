@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Upload, Trash2, FileText, ArrowLeft } from 'lucide-react';
+import { Upload, Trash2, FileText, ArrowLeft, Download } from 'lucide-react';
 
 export default function ProjectDetail() {
   const { projectId } = useParams();
@@ -173,6 +173,9 @@ export default function ProjectDetail() {
                         </Button>
                         <Button variant="outline" size="sm" asChild>
                           <Link to={`/contracts/${c.id}/chat`}>Chat</Link>
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => contractsApi.downloadContract(c.id, c.filename)}>
+                          <Download className="h-4 w-4" />
                         </Button>
                         <Button variant="ghost" size="sm" onClick={() => handleDeleteContract(c.id)}>
                           <Trash2 className="h-4 w-4 text-destructive" />

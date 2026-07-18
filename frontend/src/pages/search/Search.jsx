@@ -127,7 +127,7 @@ export default function Search() {
                     <div className="flex items-center justify-between">
                       <CardTitle className="text-base flex items-center gap-2">
                         <FileText className="h-4 w-4 text-primary" />
-                        <Link to={`/contracts/${result.contract_id}`} className="hover:underline">
+                        <Link to={`/contracts/${result.contract_id}`} state={{ highlightChunk: result.chunk_index }} className="hover:underline">
                           {result.contract_filename}
                         </Link>
                       </CardTitle>
