@@ -30,3 +30,4 @@ class DashboardResponse(BaseModel):
     high_risk_contracts: int = 0
     completed_contracts: int = 0
     recent_uploads: list[RecentContractItem] = Field(default_factory=list)
+    high_risk_contract_list: list[RecentContractItem] = Field(default_factory=list)

@@ -41,6 +41,7 @@ async def get_dashboard(
             high_risk_contracts=0,
             completed_contracts=0,
             recent_uploads=[],
+            high_risk_contract_list=[],
         )
 
     # Total projects
@@ -100,10 +101,35 @@ async def get_dashboard(
         user_id, total_contracts, high_risk_contracts,
     )
 
+    # High-risk contract list
+    hr_list_result = await db.execute(
+        select(Contract, Project.name)
+        .join(Project, Contract.project_id == Project.id)
+        .where(
+            Contract.project_id.in_(project_ids),
+            Contract.overall_risk_level == RiskLevel.HIGH,
+        )
+        .order_by(Contract.uploaded_at.desc())
+    )
+    hr_rows = hr_list_result.all()
+
+    high_risk_contract_list = [
+        RecentContractItem(
+            id=str(contract.id),
+            filename=contract.filename,
+            project_name=project_name,
+            processing_status=contract.processing_status.value,
+            overall_risk_level=contract.overall_risk_level.value,
+            uploaded_at=contract.uploaded_at,
+        )
+        for contract, project_name in hr_rows
+    ]
+
     return DashboardResponse(
         total_contracts=total_contracts,
         total_projects=total_projects,
         high_risk_contracts=high_risk_contracts,
         completed_contracts=completed_contracts,
         recent_uploads=recent_uploads,
+        high_risk_contract_list=high_risk_contract_list,
     )

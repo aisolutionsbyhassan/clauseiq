@@ -34,6 +34,9 @@ All core frontend pages are now implemented using Tailwind CSS and `shadcn/ui` p
 - [x] **Contract Comparison Verification**: Verified side-by-side comparison flow.
 - [x] **UX & Navigation Enhancements**: Renamed "Semantic Search" to "Ask Your Contracts" for a more natural end-user experience. Added intuitive `Analyze` and `Chat` action buttons directly to the `Dashboard` and `ProjectDetail` tables.
 - [x] **API Bug Fixes**: Fixed `authApi.js` payload formatting and `contractsApi.js` file upload parameters.
+- [x] **PostgreSQL Recovery & Security**: Successfully diagnosed and bypassed a lost PostgreSQL root password by temporarily setting `pg_hba.conf` to `trust`, resetting the master credentials, recovering the existing `clauseiq_db`, and restoring security to `scram-sha-256`. 
+- [x] **Dashboard UI Evolution**: Upgraded the Dashboard to not only display the count of high-risk contracts but also feature an explicit "Attention Required" table that lists high-risk contracts directly, showing the project name, date, and a direct "Review" action button.
+- [x] **Strict AI Risk Detection**: Updated the `RISK_DETECTION_SYSTEM` prompt to strictly enforce lowercase `high` severity outputs for critical risks (like unlimited liability or missing termination), fixing an issue where small LLMs (Llama-3) defaulted to `low` severity in JSON extraction despite detecting the risk.
 
 ## Verified Features (Phase 9 E2E Testing)
 - **User Authentication**: Register and Login are fully functional, with standardized "Password must be at least 8 characters" validation messages. The system uses a persistent PostgreSQL database.

@@ -137,6 +137,59 @@ export default function Dashboard() {
           )}
         </CardContent>
       </Card>
+      <Card className="col-span-4">
+        <CardHeader>
+          <CardTitle className="text-destructive flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5" />
+            Attention Required: High Risk Contracts
+          </CardTitle>
+          <CardDescription>Contracts flagged with high risk severity across all projects.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          {data.high_risk_contract_list?.length === 0 ? (
+            <div className="text-sm text-muted-foreground text-center py-4">No high-risk contracts found. Great job!</div>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm text-left">
+                <thead className="text-xs text-muted-foreground uppercase bg-destructive/10">
+                  <tr>
+                    <th className="px-4 py-3 font-medium">File Name</th>
+                    <th className="px-4 py-3 font-medium">Project</th>
+                    <th className="px-4 py-3 font-medium">Risk Level</th>
+                    <th className="px-4 py-3 font-medium">Date</th>
+                    <th className="px-4 py-3 font-medium text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {data.high_risk_contract_list?.map((contract) => (
+                    <tr key={contract.id} className="border-b last:border-0 hover:bg-destructive/5">
+                      <td className="px-4 py-3 font-medium">
+                        <Link to={`/contracts/${contract.id}`} className="hover:underline text-destructive">
+                          {contract.filename}
+                        </Link>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">{contract.project_name}</td>
+                      <td className="px-4 py-3">
+                        <Badge variant="destructive">
+                          {contract.overall_risk_level}
+                        </Badge>
+                      </td>
+                      <td className="px-4 py-3 text-muted-foreground">
+                        {new Date(contract.uploaded_at).toLocaleDateString()}
+                      </td>
+                      <td className="px-4 py-3 text-right space-x-2">
+                        <Button variant="outline" size="sm" asChild className="border-destructive/30 text-destructive hover:bg-destructive hover:text-white">
+                          <Link to={`/contracts/${contract.id}`}>Review</Link>
+                        </Button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 }
