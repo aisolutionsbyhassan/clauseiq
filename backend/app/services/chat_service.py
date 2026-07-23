@@ -2,7 +2,7 @@
 ClauseIQ — Chat Service
 
 Orchestrates AI chat per AGENT.md Section 10.1.
-Retrieves relevant chunks, constructs prompt, calls Gemini,
+Retrieves relevant chunks, constructs prompt, calls Groq,
 persists conversation history.
 """
 
@@ -34,7 +34,7 @@ async def chat_with_contract(
     """
     Process a chat question about a contract.
 
-    Pipeline: embed question → retrieve chunks → build prompt → Gemini → persist messages → return.
+    Pipeline: embed question → retrieve chunks → build prompt → Groq → persist messages → return.
     """
     # Verify contract exists
     contract = await db.get(Contract, contract_id)
@@ -78,7 +78,7 @@ async def chat_with_contract(
     else:
         conversation_history = "No previous conversation."
 
-    # Step 4: Call Gemini
+    # Step 4: Call Groq
     prompt = CHAT_PROMPT.format(
         context_chunks=context_chunks,
         conversation_history=conversation_history,

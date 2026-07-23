@@ -2,7 +2,7 @@
 ClauseIQ — Comparison Service
 
 Orchestrates contract comparison per AGENT.md Section 10.5.
-Consumes extracted clauses from both contracts, calls Gemini for semantic diff.
+Consumes extracted clauses from both contracts, calls Groq for semantic diff.
 """
 
 import json
@@ -38,7 +38,7 @@ async def compare_contracts(
     db: AsyncSession,
 ) -> Comparison:
     """
-    Compare two contracts within a project via Gemini.
+    Compare two contracts within a project via Groq.
 
     Both contracts must belong to the same project and have
     completed clause extraction.
@@ -83,7 +83,7 @@ async def compare_contracts(
     clauses_a_json = json.dumps(_clauses_to_dicts(clauses_a), indent=2)
     clauses_b_json = json.dumps(_clauses_to_dicts(clauses_b), indent=2)
 
-    # Call Gemini
+    # Call Groq
     prompt = COMPARISON_PROMPT.format(
         filename_a=contract_a.filename,
         filename_b=contract_b.filename,

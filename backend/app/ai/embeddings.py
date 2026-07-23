@@ -1,11 +1,11 @@
 """
 ClauseIQ — Embedding Generation Module
 
-Wraps Sentence Transformers for local embedding generation
-per AGENT.md Section 9.5. No external API dependency for embeddings.
+Wraps LangChain's HuggingFaceEmbeddings for local embedding generation
+per the user's LangChain integration request.
 """
 
-from sentence_transformers import SentenceTransformer
+from langchain_huggingface import HuggingFaceEmbeddings
 
 from app.config import settings
 from app.core.logging_config import get_logger
@@ -13,40 +13,34 @@ from app.core.logging_config import get_logger
 logger = get_logger("embeddings")
 
 # Module-level singleton to avoid reloading the model on every call
-_model: SentenceTransformer | None = None
+_model: HuggingFaceEmbeddings | None = None
 
 
-def _get_model() -> SentenceTransformer:
-    """Load the embedding model lazily (singleton)."""
+def get_embedding_model() -> HuggingFaceEmbeddings:
+    """Load the LangChain embedding model lazily (singleton)."""
     global _model
     if _model is None:
-        logger.info("Loading embedding model: %s", settings.EMBEDDING_MODEL_NAME)
-        _model = SentenceTransformer(settings.EMBEDDING_MODEL_NAME)
-        logger.info("Embedding model loaded successfully")
+        logger.info("Loading LangChain HuggingFaceEmbeddings model: %s", settings.EMBEDDING_MODEL_NAME)
+        _model = HuggingFaceEmbeddings(model_name=settings.EMBEDDING_MODEL_NAME)
+        logger.info("LangChain Embedding model loaded successfully")
     return _model
 
 
 def generate_embeddings(texts: list[str]) -> list[list[float]]:
     """
-    Generate embedding vectors for a list of text strings.
-
-    Args:
-        texts: List of text strings to embed.
-
-    Returns:
-        List of embedding vectors (each a list of floats).
+    Generate embedding vectors for a list of text strings using LangChain.
     """
     if not texts:
         return []
 
-    model = _get_model()
-    embeddings = model.encode(texts, show_progress_bar=False)
+    model = get_embedding_model()
+    embeddings = model.embed_documents(texts)
 
-    logger.info("Generated %d embeddings (dim=%d)", len(texts), len(embeddings[0]))
-    return [emb.tolist() for emb in embeddings]
+    logger.info("Generated %d embeddings via LangChain", len(texts))
+    return embeddings
 
 
 def generate_single_embedding(text: str) -> list[float]:
-    """Generate an embedding for a single text string."""
-    result = generate_embeddings([text])
-    return result[0] if result else []
+    """Generate an embedding for a single text string using LangChain."""
+    model = get_embedding_model()
+    return model.embed_query(text)

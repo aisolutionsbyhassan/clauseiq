@@ -83,7 +83,7 @@ class ProcessingFailedError(ClauseIQError):
 
 
 class AIServiceError(ClauseIQError):
-    """Raised when an AI service call (Gemini, embeddings) fails."""
+    """Raised when an AI service call (Groq, embeddings) fails."""
 
     def __init__(self, message: str = "AI service encountered an error"):
         super().__init__(message)

@@ -29,7 +29,7 @@ async def generate_summary_for_contract(
     db: AsyncSession,
 ) -> ExecutiveSummary:
     """
-    Generate an executive summary for a contract via Gemini.
+    Generate an executive summary for a contract via Groq.
 
     Triggered after clause extraction and risk detection complete.
     """
@@ -69,7 +69,7 @@ async def generate_summary_for_contract(
         for r in risks
     ], indent=2)
 
-    # Call Gemini
+    # Call Groq
     prompt = EXECUTIVE_SUMMARY_PROMPT.format(
         clauses_json=clauses_json,
         risks_json=risks_json,

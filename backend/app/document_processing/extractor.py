@@ -1,15 +1,14 @@
 """
 ClauseIQ — Text Extraction Module
 
-Extracts raw text from PDF (PyMuPDF) and DOCX (python-docx) files
-with page-level boundaries preserved per AGENT.md Section 9.2.
+Extracts raw text from PDF and DOCX files using LangChain's Document Loaders
+(PyMuPDFLoader and Docx2txtLoader) per the user's LangChain integration request.
 """
 
 from dataclasses import dataclass, field
 from pathlib import Path
 
-import fitz  # PyMuPDF
-from docx import Document as DocxDocument
+from langchain_community.document_loaders import PyMuPDFLoader, Docx2txtLoader
 
 from app.core.logging_config import get_logger
 
@@ -33,30 +32,28 @@ class ExtractionResult:
 
 def extract_from_pdf(file_path: str) -> ExtractionResult:
     """
-    Extract text from a PDF file using PyMuPDF.
-
-    Preserves page-level boundaries for citation support.
+    Extract text from a PDF file using LangChain's PyMuPDFLoader.
     """
-    doc = fitz.open(file_path)
+    loader = PyMuPDFLoader(file_path)
+    langchain_docs = loader.load()
+    
     pages: list[PageContent] = []
-
-    for page_num in range(len(doc)):
-        page = doc.load_page(page_num)
-        text = page.get_text("text")
+    for doc in langchain_docs:
+        text = doc.page_content
+        # PyMuPDFLoader usually stores page in metadata as 0-indexed, but we'll use 1-indexed
+        page_num = doc.metadata.get("page", len(pages)) + 1
         if text.strip():
-            pages.append(PageContent(page_number=page_num + 1, text=text))
-
-    doc.close()
+            pages.append(PageContent(page_number=page_num, text=text))
 
     full_text = "\n\n".join(p.text for p in pages)
     result = ExtractionResult(
         pages=pages,
-        page_count=len(doc) if hasattr(doc, '__len__') else len(pages),
+        page_count=len(langchain_docs),
         full_text=full_text,
     )
 
     logger.info(
-        "PDF extracted: path=%s, pages=%d, chars=%d",
+        "PDF extracted via LangChain: path=%s, pages=%d, chars=%d",
         file_path, len(pages), len(full_text),
     )
     return result
@@ -64,30 +61,14 @@ def extract_from_pdf(file_path: str) -> ExtractionResult:
 
 def extract_from_docx(file_path: str) -> ExtractionResult:
     """
-    Extract text from a DOCX file using python-docx.
-
-    DOCX files don't have native page boundaries, so we treat
-    the entire document as page 1 and split by paragraphs.
+    Extract text from a DOCX file using LangChain's Docx2txtLoader.
     """
-    doc = DocxDocument(file_path)
-    paragraphs: list[str] = []
-
-    for para in doc.paragraphs:
-        text = para.text.strip()
-        if text:
-            paragraphs.append(text)
-
-    # Also extract text from tables
-    for table in doc.tables:
-        for row in table.rows:
-            row_text = " | ".join(cell.text.strip() for cell in row.cells if cell.text.strip())
-            if row_text:
-                paragraphs.append(row_text)
-
-    full_text = "\n\n".join(paragraphs)
-
-    # DOCX doesn't have page numbers — we assign page 1 to everything
-    pages = [PageContent(page_number=1, text=full_text)] if full_text else []
+    loader = Docx2txtLoader(file_path)
+    langchain_docs = loader.load()
+    
+    # Docx2txtLoader loads the entire document into a single Document object
+    full_text = langchain_docs[0].page_content if langchain_docs else ""
+    pages = [PageContent(page_number=1, text=full_text)] if full_text.strip() else []
 
     result = ExtractionResult(
         pages=pages,
@@ -96,8 +77,8 @@ def extract_from_docx(file_path: str) -> ExtractionResult:
     )
 
     logger.info(
-        "DOCX extracted: path=%s, paragraphs=%d, chars=%d",
-        file_path, len(paragraphs), len(full_text),
+        "DOCX extracted via LangChain: path=%s, chars=%d",
+        file_path, len(full_text),
     )
     return result
 
@@ -105,16 +86,6 @@ def extract_from_docx(file_path: str) -> ExtractionResult:
 def extract_text(file_path: str, file_type: str) -> ExtractionResult:
     """
     Dispatch extraction based on file type.
-
-    Args:
-        file_path: Path to the uploaded file.
-        file_type: Either "pdf" or "docx".
-
-    Returns:
-        ExtractionResult with page-level text.
-
-    Raises:
-        ValueError: If file type is unsupported.
     """
     if file_type == "pdf":
         return extract_from_pdf(file_path)

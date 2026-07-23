@@ -19,9 +19,9 @@ ClauseIQ is a full-stack, AI-driven legal tech platform designed to automate the
 
 ## ✨ Key Features
 
-- **Document Processing Pipeline:** Instantly parses and chunks PDF and DOCX files.
+- **LangChain Powered Pipeline:** Utilizes LangChain ecosystem for document loading, recursive chunking, and ChatGroq inference.
 - **AI Risk Detection:** Automatically identifies and highlights critical risks (e.g., Unlimited Liability, IP Ownership loss, strict Non-Competes).
-- **Hybrid Search & RAG:** Powered by a local **ChromaDB** vector database with LLM-based Query Expansion (HyDE) for hyper-accurate retrieval.
+- **Hybrid Search & RAG:** Powered by LangChain's Chroma vector store wrapper with LLM-based Query Expansion (HyDE) for hyper-accurate retrieval.
 - **"Ask Your Contracts" Chat:** Multi-turn conversational memory allowing users to interrogate their contracts with sub-second latency.
 - **Contract Comparison:** Side-by-side semantic comparison of multiple contracts within a project.
 - **Secure Authentication:** JWT-based user authentication with secure password hashing via `bcrypt`.

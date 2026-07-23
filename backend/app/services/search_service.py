@@ -2,7 +2,7 @@
 ClauseIQ — Semantic Search Service
 
 Implements vector-based semantic search per AGENT.md Section 10.6.
-Pure vector-retrieval feature — no Gemini call required.
+Pure vector-retrieval feature — no Groq call required.
 """
 
 import uuid

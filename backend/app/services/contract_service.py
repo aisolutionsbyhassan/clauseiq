@@ -252,7 +252,7 @@ async def process_contract(
     Run the full document processing pipeline for a contract.
 
     Pipeline per AGENT.md Section 9:
-    1. Extract raw text (PyMuPDF / python-docx)
+    1. Extract raw text (LangChain Loaders)
     2. Clean text (normalize whitespace, strip artifacts)
     3. Chunk text (overlapping, paragraph-respecting)
     4. Generate embeddings (Sentence Transformers, local)

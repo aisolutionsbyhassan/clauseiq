@@ -2,7 +2,7 @@
 ClauseIQ — Risk Detection Service
 
 Orchestrates AI risk detection per AGENT.md Section 10.3.
-Consumes extracted clauses (not raw chunks), calls Gemini, validates output,
+Consumes extracted clauses (not raw chunks), calls Groq, validates output,
 persists results, and updates the contract's overall risk level.
 """
 
@@ -32,7 +32,7 @@ async def detect_risks_for_contract(
     db: AsyncSession,
 ) -> list[DetectedRisk]:
     """
-    Run risk detection on a contract's extracted clauses via Gemini.
+    Run risk detection on a contract's extracted clauses via Groq.
 
     Triggered immediately after clause extraction completes.
     Risk detection consumes clause data, not raw chunks.
@@ -63,7 +63,7 @@ async def detect_risks_for_contract(
         for c in clauses
     ], indent=2)
 
-    # Call Gemini
+    # Call Groq
     prompt = RISK_DETECTION_PROMPT.format(clauses_json=clauses_json)
     raw_result = await generate_structured(
         prompt=prompt,

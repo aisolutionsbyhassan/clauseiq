@@ -1,7 +1,7 @@
 """
 ClauseIQ — AI Output Schemas
 
-Pydantic schemas for validating structured AI outputs from Gemini.
+Pydantic schemas for validating structured AI outputs from Groq.
 These are distinct from API request/response schemas per AGENT.md Section 11.
 """
 
@@ -13,7 +13,7 @@ from pydantic import BaseModel, Field
 # =============================================================================
 
 class ExtractedClauseOutput(BaseModel):
-    """Schema for a single extracted clause from Gemini."""
+    """Schema for a single extracted clause from Groq."""
     clause_type: str = Field(description="The clause category identifier")
     is_present: bool = Field(description="Whether this clause type is present in the contract")
     clause_text: str | None = Field(
@@ -27,7 +27,7 @@ class ExtractedClauseOutput(BaseModel):
 
 
 class ClauseExtractionSchema(BaseModel):
-    """Full clause extraction output from Gemini."""
+    """Full clause extraction output from Groq."""
     clauses: list[ExtractedClauseOutput] = Field(
         description="List of all 11 clause categories with extraction results",
     )
@@ -38,7 +38,7 @@ class ClauseExtractionSchema(BaseModel):
 # =============================================================================
 
 class DetectedRiskOutput(BaseModel):
-    """Schema for a single detected risk from Gemini."""
+    """Schema for a single detected risk from Groq."""
     risk_type: str = Field(description="The risk category identifier")
     is_applicable: bool = Field(description="Whether this risk applies to the contract")
     severity: str | None = Field(
@@ -56,7 +56,7 @@ class DetectedRiskOutput(BaseModel):
 
 
 class RiskDetectionSchema(BaseModel):
-    """Full risk detection output from Gemini."""
+    """Full risk detection output from Groq."""
     risks: list[DetectedRiskOutput] = Field(
         description="List of all 8 risk categories with detection results",
     )
@@ -67,7 +67,7 @@ class RiskDetectionSchema(BaseModel):
 # =============================================================================
 
 class ExecutiveSummarySchema(BaseModel):
-    """Structured executive summary output from Gemini."""
+    """Structured executive summary output from Groq."""
     important_dates: list[dict] = Field(
         default_factory=list,
         description="Key dates (e.g., start date, end date, renewal deadline)",
@@ -91,7 +91,7 @@ class ExecutiveSummarySchema(BaseModel):
 # =============================================================================
 
 class ComparisonSchema(BaseModel):
-    """Contract comparison output from Gemini."""
+    """Contract comparison output from Groq."""
     added_clauses: list[dict] = Field(
         default_factory=list,
         description="Clauses present in Contract B but not in Contract A",
@@ -122,7 +122,7 @@ class ChatCitation(BaseModel):
 
 
 class ChatResponseSchema(BaseModel):
-    """Chat response from Gemini with citations."""
+    """Chat response from Groq with citations."""
     answer: str = Field(description="The answer to the user's question")
     citations: list[ChatCitation] = Field(
         default_factory=list,

@@ -2,7 +2,7 @@
 ClauseIQ — Clause Extraction Service
 
 Orchestrates AI clause extraction per AGENT.md Section 10.2.
-Consumes document chunks, calls Gemini, validates output, persists results.
+Consumes document chunks, calls Groq, validates output, persists results.
 """
 
 import json
@@ -28,7 +28,7 @@ async def extract_clauses_for_contract(
     db: AsyncSession,
 ) -> list[ExtractedClause]:
     """
-    Run clause extraction on a contract's chunks via Gemini.
+    Run clause extraction on a contract's chunks via Groq.
 
     Triggered during the document processing pipeline after
     chunking/embedding is complete.
@@ -56,7 +56,7 @@ async def extract_clauses_for_contract(
         for c in chunks
     )
 
-    # Call Gemini
+    # Call Groq
     prompt = CLAUSE_EXTRACTION_PROMPT.format(chunks_text=chunks_text)
     raw_result = await generate_structured(
         prompt=prompt,

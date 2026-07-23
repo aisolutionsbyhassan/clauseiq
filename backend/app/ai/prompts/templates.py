@@ -1,7 +1,7 @@
 """
 ClauseIQ — Prompt Templates
 
-All prompt templates for Gemini workflows per AGENT.md Section 9.8.
+All prompt templates for Groq workflows per AGENT.md Section 9.8.
 Templates are plain strings with format placeholders.
 """
 

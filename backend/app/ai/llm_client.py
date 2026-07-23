@@ -1,12 +1,14 @@
 """
 ClauseIQ — Groq Client (Formerly Gemini Client)
 
-Thin wrapper around Groq SDK for all LLM interactions.
-Replaced Gemini with Groq to avoid 429 API limits while keeping function signatures identical.
+Wraps LangChain's ChatGroq for all LLM interactions
+per the user's LangChain integration request.
 """
 
 import json
-from groq import AsyncGroq
+
+from langchain_groq import ChatGroq
+from langchain_core.messages import HumanMessage, SystemMessage
 
 from app.config import settings
 from app.core.exceptions import AIServiceError
@@ -14,17 +16,17 @@ from app.core.logging_config import get_logger
 
 logger = get_logger("groq_client")
 
-_client = None
 
-
-def _get_client() -> AsyncGroq:
-    """Get or initialize the AsyncGroq client."""
-    global _client
-    if _client is None:
-        if not settings.GROQ_API_KEY or settings.GROQ_API_KEY == "your-groq-api-key-here":
-            raise AIServiceError("Groq API key is not configured. Please add it to your .env file.")
-        _client = AsyncGroq(api_key=settings.GROQ_API_KEY)
-    return _client
+def _get_chat_model(model_name: str, temperature: float, **kwargs) -> ChatGroq:
+    """Initialize the LangChain ChatGroq model."""
+    if not settings.GROQ_API_KEY or settings.GROQ_API_KEY == "your-groq-api-key-here":
+        raise AIServiceError("Groq API key is not configured. Please add it to your .env file.")
+    return ChatGroq(
+        api_key=settings.GROQ_API_KEY, 
+        model=model_name, 
+        temperature=temperature, 
+        **kwargs
+    )
 
 
 async def generate_text(
@@ -34,32 +36,27 @@ async def generate_text(
     temperature: float = 0.1,
 ) -> str:
     """
-    Generate a text response from Groq.
-    Maintains exact same signature as original Gemini implementation.
+    Generate a text response from Groq using LangChain.
     """
     try:
-        client = _get_client()
+        chat = _get_chat_model(model_name, temperature)
         
         messages = []
         if system_instruction:
-            messages.append({"role": "system", "content": system_instruction})
-        messages.append({"role": "user", "content": prompt})
+            messages.append(SystemMessage(content=system_instruction))
+        messages.append(HumanMessage(content=prompt))
 
-        response = await client.chat.completions.create(
-            model=model_name,
-            messages=messages,
-            temperature=temperature,
-        )
+        response = await chat.ainvoke(messages)
+        result = response.content
         
-        result = response.choices[0].message.content or ""
         logger.info(
-            "Groq text generated: model=%s, prompt_len=%d, response_len=%d",
-            model_name, len(prompt), len(result),
+            "LangChain ChatGroq text generated: model=%s, response_len=%d",
+            model_name, len(result),
         )
         return result
     except Exception as e:
-        logger.error("Groq text generation failed: %s", str(e), exc_info=True)
-        raise AIServiceError(f"Groq text generation failed: {str(e)}")
+        logger.error("LangChain ChatGroq text generation failed: %s", str(e), exc_info=True)
+        raise AIServiceError(f"LangChain ChatGroq text generation failed: {str(e)}")
 
 
 async def generate_structured(
@@ -69,31 +66,28 @@ async def generate_structured(
     temperature: float = 0.1,
 ) -> dict:
     """
-    Generate a structured JSON response from Groq.
-    Maintains exact same signature as original Gemini implementation.
+    Generate a structured JSON response from Groq using LangChain.
     """
     try:
-        client = _get_client()
+        # LangChain allows passing model_kwargs for specific provider features like JSON mode
+        chat = _get_chat_model(
+            model_name, 
+            temperature, 
+            model_kwargs={"response_format": {"type": "json_object"}}
+        )
         
-        messages = []
-        # Groq JSON mode requires the word 'json' in the prompt/system instruction.
-        # We enforce it here just in case the template doesn't explicitly have it.
         sys_msg = system_instruction or "You are a helpful AI assistant."
         sys_msg += "\n\nYou MUST return a valid JSON object."
         
-        messages.append({"role": "system", "content": sys_msg})
-        messages.append({"role": "user", "content": prompt})
+        messages = [
+            SystemMessage(content=sys_msg),
+            HumanMessage(content=prompt)
+        ]
 
-        response = await client.chat.completions.create(
-            model=model_name,
-            messages=messages,
-            temperature=temperature,
-            response_format={"type": "json_object"},
-        )
-        
-        raw_text = response.choices[0].message.content or ""
+        response = await chat.ainvoke(messages)
+        raw_text = response.content
 
-        # Clean up markdown code fences if present (sometimes returned even in JSON mode)
+        # Clean up markdown code fences if present
         cleaned = raw_text.strip()
         if cleaned.startswith("```json"):
             cleaned = cleaned[7:]
@@ -104,16 +98,16 @@ async def generate_structured(
         cleaned = cleaned.strip()
 
         result = json.loads(cleaned)
-        logger.info("Groq structured output parsed successfully")
+        logger.info("LangChain ChatGroq structured output parsed successfully")
         return result
     except json.JSONDecodeError as e:
         logger.error(
-            "Failed to parse Groq JSON response: %s\nRaw: %s",
+            "Failed to parse LangChain ChatGroq JSON response: %s\nRaw: %s",
             str(e), raw_text[:500] if raw_text else "empty",
         )
         raise AIServiceError(f"Failed to parse AI response as JSON: {str(e)}")
     except AIServiceError:
         raise
     except Exception as e:
-        logger.error("Groq structured generation failed: %s", str(e), exc_info=True)
-        raise AIServiceError(f"Groq structured generation failed: {str(e)}")
+        logger.error("LangChain ChatGroq structured generation failed: %s", str(e), exc_info=True)
+        raise AIServiceError(f"LangChain ChatGroq structured generation failed: {str(e)}")
