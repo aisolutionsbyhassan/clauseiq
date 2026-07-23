@@ -29,3 +29,32 @@ dist/
 
 # Alembic
 alembic/versions/__pycache__/
+
+# ---------------------------------------------------------
+# Custom Project Exclusions (Temporary & Scratch Files)
+# ---------------------------------------------------------
+
+# Log Files (This will ignore backend.log, frontend.log, etc. anywhere in the project)
+*.log
+
+# Agent Notes & Planning
+AGENT.md
+project_analysis.md
+
+# Temporary Scratch Scripts
+convert_docx.py
+create_samples.py
+generate_low_risk.py
+generate_test_docs.py
+backend/demo_script.py
+backend/test_db.py
+backend/test_neon.py
+backend/test_e2e.py
+
+# Miscellaneous Text/Batch files
+backend/demo_output.txt
+backend/demo_groq_output.txt
+backend/start_backend.bat
+
+# Sample Word Documents
+*.docx

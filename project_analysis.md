@@ -27,6 +27,8 @@
 All core frontend pages are now implemented using Tailwind CSS and `shadcn/ui` primitives and connected to the backend API services.
 
 ## Phase 9: Final Integration & QA (Completed)
+- [x] **Hybrid Architecture & Demo Strategy**: Decided against live deployment on free-tier cloud servers (like Render) due to high latency (sleep states) and RAM constraints for the embedding model. Adopted a Hybrid Architecture: Compute and Vector DB (ChromaDB) run locally, while the relational DB (Neon PostgreSQL) and LLM inference (Groq API) run in the cloud. This guarantees a flawless, 100% stable execution environment for recording professional Demo Videos for the portfolio.
+- [x] **Vector Database Rollback**: Successfully rolled back the experimental Pinecone cloud vector database integration and restored the local ChromaDB pipeline to align with the Hybrid Architecture strategy, eliminating external vector DB rate limits and network latency.
 - [x] **Live Browser Subagent E2E Demo**: Performed a complete, recorded, live walkthrough of the application via headless browser. Verified Registration, Uploads, RAG Chat, and Groq Extractions flawlessly.
 - [x] **End-to-End Testing**: Validated the entire application lifecycle (Register -> Login -> Create Project -> Upload Contract -> RAG Pipeline -> Groq API).
 - [x] **Groq API Migration**: Successfully swapped the LLM provider from Gemini to Groq API (`llama-3.3-70b-versatile`) to bypass free-tier rate limits. The migration required zero changes to the application architecture or function signatures, proving the modularity of the design.

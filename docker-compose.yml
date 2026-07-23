@@ -1,0 +1,46 @@
+services:
+  db:
+    image: postgres:15
+    container_name: clauseiq_db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: clauseiq_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: clauseiq_backend
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@db:5432/clauseiq_db
+      - CHROMA_PERSIST_DIRECTORY=/app/chroma_data
+      - CORS_ORIGINS=["http://localhost", "http://localhost:3000", "http://127.0.0.1", "http://127.0.0.1:3000"]
+    env_file:
+      - ./backend/.env
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./storage:/app/storage
+      - chroma_data:/app/chroma_data
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: clauseiq_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  chroma_data:
