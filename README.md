@@ -6,6 +6,7 @@
 [![React](https://img.shields.io/badge/react-%2320232a.svg?style=for-the-badge&logo=react&logoColor=%2361DAFB)](https://reactjs.org/)
 [![PostgreSQL](https://img.shields.io/badge/postgresql-4169e1?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 [![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)](https://www.docker.com/)
+[![LangChain](https://img.shields.io/badge/LangChain-1C3C3C?style=for-the-badge&logo=langchain&logoColor=white)](https://www.langchain.com/)
 
 **An enterprise-grade, AI-powered Contract Intelligence Platform.**
 
@@ -23,7 +24,6 @@ ClauseIQ is a full-stack, AI-driven legal tech platform designed to automate the
 - **AI Risk Detection:** Automatically identifies and highlights critical risks (e.g., Unlimited Liability, IP Ownership loss, strict Non-Competes).
 - **Hybrid Search & RAG:** Powered by LangChain's Chroma vector store wrapper with LLM-based Query Expansion (HyDE) for hyper-accurate retrieval.
 - **"Ask Your Contracts" Chat:** Multi-turn conversational memory allowing users to interrogate their contracts with sub-second latency.
-- **Contract Comparison:** Side-by-side semantic comparison of multiple contracts within a project.
 - **Secure Authentication:** JWT-based user authentication with secure password hashing via `bcrypt`.
 
 ## 🏗️ Architecture
@@ -32,6 +32,7 @@ ClauseIQ follows a modern, modular microservices-inspired architecture:
 
 - **Frontend:** React + Vite, styled with Tailwind CSS and Radix UI primitives.
 - **Backend:** FastAPI (Python), entirely async for high-concurrency performance.
+- **AI Framework:** LangChain ecosystem for orchestration, document processing, and vector abstraction.
 - **Database:** PostgreSQL (with Alembic for migrations) for relational data management.
 - **Vector Engine:** Local ChromaDB for ultra-fast, low-latency embedding retrieval.
 - **AI Inference:** Groq API integration (Llama-3.3-70b) for lightning-fast generative AI responses.
@@ -88,6 +89,3 @@ The database schema will automatically migrate on startup. You can immediately r
 3. Start server: `npm run dev`
 
 </details>
-
-## 🛡️ License
-This project is open-source and available under the MIT License.
