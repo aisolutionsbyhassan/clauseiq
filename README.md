@@ -10,7 +10,7 @@
 
 **An enterprise-grade, AI-powered Contract Intelligence Platform.**
 
-[Watch the Demo Video](https://youtube.com/your-video-link-here) <!-- Replace with actual link -->
+[Watch the Demo Video](https://youtu.be/gfx__AxiDSk)
 
 </div>
 
